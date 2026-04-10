@@ -550,30 +550,39 @@
     return nil;
   }
 
-  UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 144, 72)];
+  UIFont *titleFont = [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
+  UIFont *snippetFont = [UIFont systemFontOfSize:18 weight:UIFontWeightBold];
+  NSDictionary *titleAttributes = @{NSFontAttributeName : titleFont};
+  NSDictionary *snippetAttributes = @{NSFontAttributeName : snippetFont};
+  CGFloat titleWidth = marker.title.length > 0
+                           ? ceil([marker.title sizeWithAttributes:titleAttributes].width)
+                           : 0;
+  CGFloat snippetWidth = marker.snippet.length > 0
+                             ? ceil([marker.snippet sizeWithAttributes:snippetAttributes].width)
+                             : 0;
+  CGFloat containerWidth = MIN(MAX(MAX(titleWidth, snippetWidth) + 36.0, 144.0), 220.0);
+
+  UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, containerWidth, 70)];
   container.backgroundColor = [UIColor colorWithRed:20.0 / 255.0
                                               green:163.0 / 255.0
                                                blue:184.0 / 255.0
-                                              alpha:1.0];
-  container.layer.cornerRadius = 16.0;
+                                               alpha:1.0];
+  container.layer.cornerRadius = 18.0;
   container.layer.borderColor = UIColor.whiteColor.CGColor;
   container.layer.borderWidth = 2.0;
-  container.layer.shadowColor = UIColor.blackColor.CGColor;
-  container.layer.shadowOpacity = 0.16f;
-  container.layer.shadowRadius = 8.0f;
-  container.layer.shadowOffset = CGSizeMake(0, 8);
+  container.clipsToBounds = YES;
 
-  UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(12, 10, 120, 16)];
+  UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, 11, containerWidth - 36, 16)];
   titleLabel.text = marker.title;
   titleLabel.textColor = UIColor.whiteColor;
-  titleLabel.font = [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
+  titleLabel.font = titleFont;
   titleLabel.textAlignment = NSTextAlignmentCenter;
   titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-  UILabel *snippetLabel = [[UILabel alloc] initWithFrame:CGRectMake(12, 28, 120, 22)];
+  UILabel *snippetLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, 29, containerWidth - 36, 24)];
   snippetLabel.text = marker.snippet;
   snippetLabel.textColor = UIColor.whiteColor;
-  snippetLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+  snippetLabel.font = snippetFont;
   snippetLabel.textAlignment = NSTextAlignmentCenter;
   snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
