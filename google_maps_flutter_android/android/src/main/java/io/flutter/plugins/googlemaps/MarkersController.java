@@ -314,7 +314,11 @@ class MarkersController {
   public void onClusterItemRendered(MarkerBuilder markerBuilder, Marker marker) {
     String markerId = markerBuilder.markerId();
     if (markerIdToMarkerBuilder.get(markerId) == markerBuilder) {
-      createControllerForMarker(markerBuilder.markerId(), marker, markerBuilder.consumeTapEvents());
+      createControllerForMarker(
+          markerBuilder.markerId(),
+          marker,
+          markerBuilder.consumeTapEvents(),
+          markerBuilder.infoWindowStyleJson());
     }
   }
 
@@ -346,15 +350,21 @@ class MarkersController {
   private void addMarkerToCollection(String markerId, MarkerBuilder markerBuilder) {
     MarkerOptions options = markerBuilder.build();
     final Marker marker = markerCollection.addMarker(options);
-    createControllerForMarker(markerId, marker, markerBuilder.consumeTapEvents());
+    createControllerForMarker(
+        markerId, marker, markerBuilder.consumeTapEvents(), markerBuilder.infoWindowStyleJson());
   }
 
   private void addMarkerBuilderForCluster(MarkerBuilder markerBuilder) {
     clusterManagersController.addItem(markerBuilder);
   }
 
-  private void createControllerForMarker(String markerId, Marker marker, boolean consumeTapEvents) {
+  private void createControllerForMarker(
+      String markerId,
+      Marker marker,
+      boolean consumeTapEvents,
+      String infoWindowStyleJson) {
     MarkerController controller = new MarkerController(marker, consumeTapEvents);
+    controller.setInfoWindowStyleJson(infoWindowStyleJson);
     markerIdToController.put(markerId, controller);
     googleMapsMarkerIdToDartMarkerId.put(marker.getId(), markerId);
   }
