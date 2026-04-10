@@ -4,8 +4,10 @@ Monorepo internal untuk override implementation package `google_maps_flutter` ag
 
 Isi repo:
 
+- `google_maps_flutter`
 - `google_maps_flutter_android`
 - `google_maps_flutter_ios`
+- `google_maps_flutter_platform_interface`
 
 ## Latar belakang
 
@@ -19,6 +21,10 @@ Tambahkan override berikut di `pubspec.yaml` aplikasi:
 
 ```yaml
 dependency_overrides:
+  google_maps_flutter:
+    git:
+      url: git@github.com:Averoes12/custom-info-window-maps.git
+      path: google_maps_flutter
   google_maps_flutter_android:
     git:
       url: git@github.com:Averoes12/custom-info-window-maps.git
@@ -27,6 +33,10 @@ dependency_overrides:
     git:
       url: git@github.com:Averoes12/custom-info-window-maps.git
       path: google_maps_flutter_ios
+  google_maps_flutter_platform_interface:
+    git:
+      url: git@github.com:Averoes12/custom-info-window-maps.git
+      path: google_maps_flutter_platform_interface
 ```
 
 Lalu jalankan:
@@ -46,8 +56,43 @@ flutter pub get
 
 - Menambahkan `mapView:markerInfoWindow:` di `FGMGoogleMapController`
 
+## API custom dari Flutter
+
+Fork ini menambahkan `InfoWindowStyle` ke `InfoWindow`, sehingga style bubble bisa dikirim dari aplikasi Flutter dan dirender native di Android/iOS.
+
+Contoh:
+
+```dart
+const infoWindowStyle = InfoWindowStyle(
+  backgroundColor: Color(0xFF14A3B8),
+  borderColor: Colors.white,
+  titleTextColor: Colors.white,
+  snippetTextColor: Colors.white,
+  cornerRadius: 18,
+  borderWidth: 2,
+  horizontalPadding: 18,
+  verticalPadding: 12,
+  titleFontSize: 12,
+  snippetFontSize: 18,
+  minWidth: 144,
+  maxWidth: 220,
+  titleBold: false,
+  snippetBold: true,
+);
+
+Marker(
+  markerId: const MarkerId('customer'),
+  position: const LatLng(-6.2, 106.8),
+  infoWindow: const InfoWindow(
+    title: 'ID Pelanggan',
+    snippet: '123456789010',
+    style: infoWindowStyle,
+  ),
+)
+```
+
 ## Catatan
 
-- Surface API Dart aplikasi tetap memakai `InfoWindow(title/snippet)` bawaan `google_maps_flutter`.
+- Native Android menggunakan `GoogleMap.InfoWindowAdapter`.
+- Native iOS menggunakan `mapView:markerInfoWindow:`.
 - Custom tampilan dirender native di Android dan iOS.
-- Jika nanti ingin surface Dart yang lebih kaya, langkah berikutnya adalah fork package induk `google_maps_flutter` dan menambah API baru di layer platform interface.
