@@ -37,8 +37,8 @@ class CustomMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     final InfoWindowNativeStyle style = InfoWindowNativeStyle.fromJson(marker.getTag());
     final int horizontalPadding = dp(style.horizontalPadding);
     final int verticalPadding = dp(style.verticalPadding);
-    final int titleTextSizeSp = Math.round(style.titleFontSize);
-    final int snippetTextSizeSp = Math.round(style.snippetFontSize);
+    final int titleTextSizeSp = (int) Math.round(style.titleFontSize);
+    final int snippetTextSizeSp = (int) Math.round(style.snippetFontSize);
     final int dynamicWidth = Math.max(
         dp(style.minWidth),
         Math.min(
