@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// This property is set only if the marker is managed by a cluster manager.
 @property(nonatomic, copy, nullable) NSString *clusterManagerIdentifier;
 
+/// JSON-encoded native info window style configuration.
+@property(nonatomic, copy, nullable) NSString *infoWindowStyleJson;
+
 @end
 
 /// Associates a marker identifier and optionally a cluster manager identifier with a marker's user
@@ -33,5 +36,12 @@ extern NSString *_Nullable FGMGetMarkerIdentifierFromMarker(GMSMarker *marker);
 ///
 /// @return The cluster manager identifier if found; otherwise, nil.
 extern NSString *_Nullable FGMGetClusterManagerIdentifierFromMarker(GMSMarker *marker);
+
+/// Associates a JSON-encoded info window style with a marker's user data.
+extern void FGMSetInfoWindowStyleJsonToMarkerUserData(NSString *_Nullable infoWindowStyleJson,
+                                                      GMSMarker *marker);
+
+/// Get the JSON-encoded info window style from marker's user data.
+extern NSString *_Nullable FGMGetInfoWindowStyleJsonFromMarker(GMSMarker *marker);
 
 NS_ASSUME_NONNULL_END

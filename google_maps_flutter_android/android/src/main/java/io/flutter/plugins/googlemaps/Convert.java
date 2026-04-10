@@ -664,6 +664,9 @@ class Convert {
     if (title != null) {
       sink.setInfoWindowText(title, infoWindow.getSnippet());
     }
+    if (infoWindow.getStyleJson() != null) {
+      sink.setInfoWindowStyleJson(infoWindow.getStyleJson());
+    }
     Messages.PlatformDoublePair infoWindowAnchor = infoWindow.getAnchor();
     sink.setInfoWindowAnchor(
         infoWindowAnchor.getX().floatValue(), infoWindowAnchor.getY().floatValue());

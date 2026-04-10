@@ -550,8 +550,65 @@
     return nil;
   }
 
-  UIFont *titleFont = [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
-  UIFont *snippetFont = [UIFont systemFontOfSize:18 weight:UIFontWeightBold];
+  NSString *styleJson = FGMGetInfoWindowStyleJsonFromMarker(marker);
+  NSDictionary *style = nil;
+  if (styleJson.length > 0) {
+    NSData *styleData = [styleJson dataUsingEncoding:NSUTF8StringEncoding];
+    if (styleData != nil) {
+      NSDictionary *json =
+          [NSJSONSerialization JSONObjectWithData:styleData options:0 error:nil];
+      if ([json isKindOfClass:[NSDictionary class]]) {
+        style = json;
+      }
+    }
+  }
+
+  UIColor *(^colorFromArgb)(NSNumber *, UIColor *) = ^UIColor *(NSNumber *value, UIColor *fallback) {
+    if (value == nil) {
+      return fallback;
+    }
+    uint32_t argb = value.unsignedIntValue;
+    CGFloat alpha = ((argb >> 24) & 0xFF) / 255.0;
+    CGFloat red = ((argb >> 16) & 0xFF) / 255.0;
+    CGFloat green = ((argb >> 8) & 0xFF) / 255.0;
+    CGFloat blue = (argb & 0xFF) / 255.0;
+    return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
+  };
+
+  double (^doubleFromStyle)(NSString *, double) = ^double(NSString *key, double fallback) {
+    NSNumber *value = style[key];
+    return value != nil ? value.doubleValue : fallback;
+  };
+
+  BOOL (^boolFromStyle)(NSString *, BOOL) = ^BOOL(NSString *key, BOOL fallback) {
+    NSNumber *value = style[key];
+    return value != nil ? value.boolValue : fallback;
+  };
+
+  UIColor *backgroundColor =
+      colorFromArgb(style[@"backgroundColor"], [UIColor colorWithRed:20.0 / 255.0
+                                                                green:163.0 / 255.0
+                                                                 blue:184.0 / 255.0
+                                                                alpha:1.0]);
+  UIColor *borderColor = colorFromArgb(style[@"borderColor"], UIColor.whiteColor);
+  UIColor *titleTextColor = colorFromArgb(style[@"titleTextColor"], UIColor.whiteColor);
+  UIColor *snippetTextColor = colorFromArgb(style[@"snippetTextColor"], UIColor.whiteColor);
+  CGFloat cornerRadius = doubleFromStyle(@"cornerRadius", 18.0);
+  CGFloat borderWidth = doubleFromStyle(@"borderWidth", 2.0);
+  CGFloat horizontalPadding = doubleFromStyle(@"horizontalPadding", 18.0);
+  CGFloat verticalPadding = doubleFromStyle(@"verticalPadding", 12.0);
+  CGFloat titleFontSize = doubleFromStyle(@"titleFontSize", 12.0);
+  CGFloat snippetFontSize = doubleFromStyle(@"snippetFontSize", 18.0);
+  CGFloat minWidth = doubleFromStyle(@"minWidth", 144.0);
+  CGFloat maxWidth = doubleFromStyle(@"maxWidth", 220.0);
+  BOOL titleBold = boolFromStyle(@"titleBold", NO);
+  BOOL snippetBold = boolFromStyle(@"snippetBold", YES);
+
+  UIFont *titleFont = [UIFont systemFontOfSize:titleFontSize
+                                        weight:titleBold ? UIFontWeightBold : UIFontWeightRegular];
+  UIFont *snippetFont =
+      [UIFont systemFontOfSize:snippetFontSize
+                        weight:snippetBold ? UIFontWeightBold : UIFontWeightRegular];
   NSDictionary *titleAttributes = @{NSFontAttributeName : titleFont};
   NSDictionary *snippetAttributes = @{NSFontAttributeName : snippetFont};
   CGFloat titleWidth = marker.title.length > 0
@@ -560,28 +617,34 @@
   CGFloat snippetWidth = marker.snippet.length > 0
                              ? ceil([marker.snippet sizeWithAttributes:snippetAttributes].width)
                              : 0;
-  CGFloat containerWidth = MIN(MAX(MAX(titleWidth, snippetWidth) + 36.0, 144.0), 220.0);
+  CGFloat containerWidth = MIN(
+      MAX(MAX(titleWidth, snippetWidth) + (horizontalPadding * 2), minWidth), maxWidth);
 
   UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, containerWidth, 70)];
-  container.backgroundColor = [UIColor colorWithRed:20.0 / 255.0
-                                              green:163.0 / 255.0
-                                               blue:184.0 / 255.0
-                                               alpha:1.0];
-  container.layer.cornerRadius = 18.0;
-  container.layer.borderColor = UIColor.whiteColor.CGColor;
-  container.layer.borderWidth = 2.0;
+  container.backgroundColor = backgroundColor;
+  container.layer.cornerRadius = cornerRadius;
+  container.layer.borderColor = borderColor.CGColor;
+  container.layer.borderWidth = borderWidth;
   container.clipsToBounds = YES;
 
-  UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, 11, containerWidth - 36, 16)];
+  UILabel *titleLabel = [[UILabel alloc]
+      initWithFrame:CGRectMake(horizontalPadding,
+                               verticalPadding - 1,
+                               containerWidth - (horizontalPadding * 2),
+                               16)];
   titleLabel.text = marker.title;
-  titleLabel.textColor = UIColor.whiteColor;
+  titleLabel.textColor = titleTextColor;
   titleLabel.font = titleFont;
   titleLabel.textAlignment = NSTextAlignmentCenter;
   titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-  UILabel *snippetLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, 29, containerWidth - 36, 24)];
+  UILabel *snippetLabel = [[UILabel alloc]
+      initWithFrame:CGRectMake(horizontalPadding,
+                               verticalPadding + 17,
+                               containerWidth - (horizontalPadding * 2),
+                               24)];
   snippetLabel.text = marker.snippet;
-  snippetLabel.textColor = UIColor.whiteColor;
+  snippetLabel.textColor = snippetTextColor;
   snippetLabel.font = snippetFont;
   snippetLabel.textAlignment = NSTextAlignmentCenter;
   snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;

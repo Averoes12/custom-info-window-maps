@@ -15,12 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 class CustomMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-  private static final int BACKGROUND_COLOR = Color.parseColor("#14A3B8");
-  private static final int BORDER_COLOR = Color.WHITE;
-  private static final int MIN_WIDTH_DP = 144;
-  private static final int MAX_WIDTH_DP = 220;
   private final Context context;
 
   CustomMarkerInfoWindowAdapter(@NonNull Context context) {
@@ -36,46 +34,52 @@ class CustomMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
       return null;
     }
 
+    final InfoWindowNativeStyle style = InfoWindowNativeStyle.fromJson(marker.getTag());
+    final int horizontalPadding = dp(style.horizontalPadding);
+    final int verticalPadding = dp(style.verticalPadding);
+    final int titleTextSizeSp = Math.round(style.titleFontSize);
+    final int snippetTextSizeSp = Math.round(style.snippetFontSize);
+    final int dynamicWidth = Math.max(
+        dp(style.minWidth),
+        Math.min(
+            dp(style.maxWidth),
+            Math.round(
+                Math.max(
+                        measureTextWidth(title, titleTextSizeSp, style.titleBold),
+                        measureTextWidth(snippet, snippetTextSizeSp, style.snippetBold))
+                    + (horizontalPadding * 2))));
+
     final LinearLayout container = new LinearLayout(context);
     container.setOrientation(LinearLayout.VERTICAL);
     container.setGravity(Gravity.CENTER);
-    final int horizontalPadding = dp(18);
-    final int titleTextSizeSp = 12;
-    final int snippetTextSizeSp = 18;
-    final int dynamicWidth = Math.max(
-        dp(MIN_WIDTH_DP),
-        Math.min(
-            dp(MAX_WIDTH_DP),
-            Math.round(
-                Math.max(
-                        measureTextWidth(title, titleTextSizeSp, false),
-                        measureTextWidth(snippet, snippetTextSizeSp, true))
-                    + (horizontalPadding * 2))));
-
     container.setLayoutParams(
         new ViewGroup.LayoutParams(dynamicWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-    container.setPadding(horizontalPadding, dp(12), horizontalPadding, dp(12));
+    container.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
 
     final GradientDrawable background = new GradientDrawable();
-    background.setColor(BACKGROUND_COLOR);
-    background.setCornerRadius(dp(18));
-    background.setStroke(dp(2), BORDER_COLOR);
+    background.setColor(style.backgroundColor);
+    background.setCornerRadius(dp(style.cornerRadius));
+    background.setStroke(dp(style.borderWidth), style.borderColor);
     container.setBackground(background);
 
     final TextView titleView = new TextView(context);
     titleView.setGravity(Gravity.CENTER);
-    titleView.setTextColor(BORDER_COLOR);
+    titleView.setTextColor(style.titleTextColor);
     titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, titleTextSizeSp);
-    titleView.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+    titleView.setTypeface(
+        style.titleBold ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT,
+        style.titleBold ? Typeface.BOLD : Typeface.NORMAL);
     titleView.setSingleLine(true);
     titleView.setEllipsize(TextUtils.TruncateAt.END);
     titleView.setText(title);
 
     final TextView snippetView = new TextView(context);
     snippetView.setGravity(Gravity.CENTER);
-    snippetView.setTextColor(BORDER_COLOR);
+    snippetView.setTextColor(style.snippetTextColor);
     snippetView.setTextSize(TypedValue.COMPLEX_UNIT_SP, snippetTextSizeSp);
-    snippetView.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+    snippetView.setTypeface(
+        style.snippetBold ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT,
+        style.snippetBold ? Typeface.BOLD : Typeface.NORMAL);
     snippetView.setSingleLine(true);
     snippetView.setEllipsize(TextUtils.TruncateAt.END);
     snippetView.setText(snippet);
@@ -99,8 +103,8 @@ class CustomMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     return null;
   }
 
-  private int dp(int value) {
-    return Math.round(value * context.getResources().getDisplayMetrics().density);
+  private int dp(double value) {
+    return Math.round((float) value * context.getResources().getDisplayMetrics().density);
   }
 
   private float measureTextWidth(@Nullable String text, int textSizeSp, boolean bold) {
@@ -116,5 +120,108 @@ class CustomMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
             context.getResources().getDisplayMetrics()));
     paint.setTypeface(bold ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
     return paint.measureText(text);
+  }
+
+  private static final class InfoWindowNativeStyle {
+    final int backgroundColor;
+    final int borderColor;
+    final int titleTextColor;
+    final int snippetTextColor;
+    final double cornerRadius;
+    final double borderWidth;
+    final double horizontalPadding;
+    final double verticalPadding;
+    final double titleFontSize;
+    final double snippetFontSize;
+    final double minWidth;
+    final double maxWidth;
+    final boolean titleBold;
+    final boolean snippetBold;
+
+    private InfoWindowNativeStyle(
+        int backgroundColor,
+        int borderColor,
+        int titleTextColor,
+        int snippetTextColor,
+        double cornerRadius,
+        double borderWidth,
+        double horizontalPadding,
+        double verticalPadding,
+        double titleFontSize,
+        double snippetFontSize,
+        double minWidth,
+        double maxWidth,
+        boolean titleBold,
+        boolean snippetBold) {
+      this.backgroundColor = backgroundColor;
+      this.borderColor = borderColor;
+      this.titleTextColor = titleTextColor;
+      this.snippetTextColor = snippetTextColor;
+      this.cornerRadius = cornerRadius;
+      this.borderWidth = borderWidth;
+      this.horizontalPadding = horizontalPadding;
+      this.verticalPadding = verticalPadding;
+      this.titleFontSize = titleFontSize;
+      this.snippetFontSize = snippetFontSize;
+      this.minWidth = minWidth;
+      this.maxWidth = maxWidth;
+      this.titleBold = titleBold;
+      this.snippetBold = snippetBold;
+    }
+
+    static InfoWindowNativeStyle fromJson(@Nullable Object tag) {
+      int backgroundColor = Color.parseColor("#14A3B8");
+      int borderColor = Color.WHITE;
+      int titleTextColor = Color.WHITE;
+      int snippetTextColor = Color.WHITE;
+      double cornerRadius = 18.0;
+      double borderWidth = 2.0;
+      double horizontalPadding = 18.0;
+      double verticalPadding = 12.0;
+      double titleFontSize = 12.0;
+      double snippetFontSize = 18.0;
+      double minWidth = 144.0;
+      double maxWidth = 220.0;
+      boolean titleBold = false;
+      boolean snippetBold = true;
+
+      if (tag instanceof String) {
+        try {
+          JSONObject json = new JSONObject((String) tag);
+          backgroundColor = json.optInt("backgroundColor", backgroundColor);
+          borderColor = json.optInt("borderColor", borderColor);
+          titleTextColor = json.optInt("titleTextColor", titleTextColor);
+          snippetTextColor = json.optInt("snippetTextColor", snippetTextColor);
+          cornerRadius = json.optDouble("cornerRadius", cornerRadius);
+          borderWidth = json.optDouble("borderWidth", borderWidth);
+          horizontalPadding = json.optDouble("horizontalPadding", horizontalPadding);
+          verticalPadding = json.optDouble("verticalPadding", verticalPadding);
+          titleFontSize = json.optDouble("titleFontSize", titleFontSize);
+          snippetFontSize = json.optDouble("snippetFontSize", snippetFontSize);
+          minWidth = json.optDouble("minWidth", minWidth);
+          maxWidth = json.optDouble("maxWidth", maxWidth);
+          titleBold = json.optBoolean("titleBold", titleBold);
+          snippetBold = json.optBoolean("snippetBold", snippetBold);
+        } catch (JSONException ignored) {
+          // Keep defaults if style payload is invalid.
+        }
+      }
+
+      return new InfoWindowNativeStyle(
+          backgroundColor,
+          borderColor,
+          titleTextColor,
+          snippetTextColor,
+          cornerRadius,
+          borderWidth,
+          horizontalPadding,
+          verticalPadding,
+          titleFontSize,
+          snippetFontSize,
+          minWidth,
+          maxWidth,
+          titleBold,
+          snippetBold);
+    }
   }
 }

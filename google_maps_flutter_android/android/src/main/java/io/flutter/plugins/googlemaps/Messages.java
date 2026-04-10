@@ -2062,6 +2062,16 @@ public class Messages {
       this.anchor = setterArg;
     }
 
+    private @Nullable String styleJson;
+
+    public @Nullable String getStyleJson() {
+      return styleJson;
+    }
+
+    public void setStyleJson(@Nullable String setterArg) {
+      this.styleJson = setterArg;
+    }
+
     /** Constructor is non-public to enforce null safety; use Builder. */
     PlatformInfoWindow() {}
 
@@ -2076,12 +2086,13 @@ public class Messages {
       PlatformInfoWindow that = (PlatformInfoWindow) o;
       return Objects.equals(title, that.title)
           && Objects.equals(snippet, that.snippet)
-          && anchor.equals(that.anchor);
+          && anchor.equals(that.anchor)
+          && Objects.equals(styleJson, that.styleJson);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(title, snippet, anchor);
+      return Objects.hash(title, snippet, anchor, styleJson);
     }
 
     public static final class Builder {
@@ -2110,21 +2121,31 @@ public class Messages {
         return this;
       }
 
+      private @Nullable String styleJson;
+
+      @CanIgnoreReturnValue
+      public @NonNull Builder setStyleJson(@Nullable String setterArg) {
+        this.styleJson = setterArg;
+        return this;
+      }
+
       public @NonNull PlatformInfoWindow build() {
         PlatformInfoWindow pigeonReturn = new PlatformInfoWindow();
         pigeonReturn.setTitle(title);
         pigeonReturn.setSnippet(snippet);
         pigeonReturn.setAnchor(anchor);
+        pigeonReturn.setStyleJson(styleJson);
         return pigeonReturn;
       }
     }
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<>(3);
+      ArrayList<Object> toListResult = new ArrayList<>(4);
       toListResult.add(title);
       toListResult.add(snippet);
       toListResult.add(anchor);
+      toListResult.add(styleJson);
       return toListResult;
     }
 
@@ -2136,6 +2157,8 @@ public class Messages {
       pigeonResult.setSnippet((String) snippet);
       Object anchor = pigeonVar_list.get(2);
       pigeonResult.setAnchor((PlatformDoublePair) anchor);
+      Object styleJson = pigeonVar_list.get(3);
+      pigeonResult.setStyleJson((String) styleJson);
       return pigeonResult;
     }
   }

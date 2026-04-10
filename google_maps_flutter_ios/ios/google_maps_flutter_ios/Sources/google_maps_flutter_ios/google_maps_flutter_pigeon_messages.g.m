@@ -729,11 +729,13 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
 @implementation FGMPlatformInfoWindow
 + (instancetype)makeWithTitle:(nullable NSString *)title
                       snippet:(nullable NSString *)snippet
-                       anchor:(FGMPlatformPoint *)anchor {
+                       anchor:(FGMPlatformPoint *)anchor
+                    styleJson:(nullable NSString *)styleJson {
   FGMPlatformInfoWindow *pigeonResult = [[FGMPlatformInfoWindow alloc] init];
   pigeonResult.title = title;
   pigeonResult.snippet = snippet;
   pigeonResult.anchor = anchor;
+  pigeonResult.styleJson = styleJson;
   return pigeonResult;
 }
 + (FGMPlatformInfoWindow *)fromList:(NSArray<id> *)list {
@@ -741,6 +743,7 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
   pigeonResult.title = GetNullableObjectAtIndex(list, 0);
   pigeonResult.snippet = GetNullableObjectAtIndex(list, 1);
   pigeonResult.anchor = GetNullableObjectAtIndex(list, 2);
+  pigeonResult.styleJson = GetNullableObjectAtIndex(list, 3);
   return pigeonResult;
 }
 + (nullable FGMPlatformInfoWindow *)nullableFromList:(NSArray<id> *)list {
@@ -751,6 +754,7 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
     self.title ?: [NSNull null],
     self.snippet ?: [NSNull null],
     self.anchor ?: [NSNull null],
+    self.styleJson ?: [NSNull null],
   ];
 }
 @end

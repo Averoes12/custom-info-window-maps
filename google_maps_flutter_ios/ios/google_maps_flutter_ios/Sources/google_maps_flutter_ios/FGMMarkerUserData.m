@@ -11,7 +11,12 @@
 void FGMSetIdentifiersToMarkerUserData(NSString *markerIdentifier,
                                        NSString *_Nullable clusterManagerIdentifier,
                                        GMSMarker *marker) {
-  FGMMarkerUserData *userData = [[FGMMarkerUserData alloc] init];
+  FGMMarkerUserData *userData = nil;
+  if ([marker.userData isKindOfClass:[FGMMarkerUserData class]]) {
+    userData = (FGMMarkerUserData *)marker.userData;
+  } else {
+    userData = [[FGMMarkerUserData alloc] init];
+  }
   userData.markerIdentifier = markerIdentifier;
   userData.clusterManagerIdentifier = clusterManagerIdentifier;
   marker.userData = userData;
@@ -29,6 +34,26 @@ NSString *_Nullable FGMGetClusterManagerIdentifierFromMarker(GMSMarker *marker) 
   if ([marker.userData isKindOfClass:[FGMMarkerUserData class]]) {
     FGMMarkerUserData *userData = (FGMMarkerUserData *)marker.userData;
     return userData.clusterManagerIdentifier;
+  }
+  return nil;
+};
+
+void FGMSetInfoWindowStyleJsonToMarkerUserData(NSString *_Nullable infoWindowStyleJson,
+                                               GMSMarker *marker) {
+  FGMMarkerUserData *userData = nil;
+  if ([marker.userData isKindOfClass:[FGMMarkerUserData class]]) {
+    userData = (FGMMarkerUserData *)marker.userData;
+  } else {
+    userData = [[FGMMarkerUserData alloc] init];
+  }
+  userData.infoWindowStyleJson = infoWindowStyleJson;
+  marker.userData = userData;
+};
+
+NSString *_Nullable FGMGetInfoWindowStyleJsonFromMarker(GMSMarker *marker) {
+  if ([marker.userData isKindOfClass:[FGMMarkerUserData class]]) {
+    FGMMarkerUserData *userData = (FGMMarkerUserData *)marker.userData;
+    return userData.infoWindowStyleJson;
   }
   return nil;
 };

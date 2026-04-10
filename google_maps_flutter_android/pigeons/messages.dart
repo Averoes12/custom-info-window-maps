@@ -194,11 +194,17 @@ class PlatformColor {
 
 /// Pigeon equivalent of the InfoWindow class.
 class PlatformInfoWindow {
-  PlatformInfoWindow({required this.anchor, this.title, this.snippet});
+  PlatformInfoWindow({
+    required this.anchor,
+    this.title,
+    this.snippet,
+    this.styleJson,
+  });
 
   final String? title;
   final String? snippet;
   final PlatformDoublePair anchor;
+  final String? styleJson;
 }
 
 /// Pigeon equivalent of the Marker class.

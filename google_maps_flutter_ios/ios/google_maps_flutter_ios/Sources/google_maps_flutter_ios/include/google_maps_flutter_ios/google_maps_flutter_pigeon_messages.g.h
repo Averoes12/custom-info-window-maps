@@ -278,10 +278,12 @@ typedef NS_ENUM(NSUInteger, FGMPlatformMapBitmapScaling) {
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithTitle:(nullable NSString *)title
                       snippet:(nullable NSString *)snippet
-                       anchor:(FGMPlatformPoint *)anchor;
+                       anchor:(FGMPlatformPoint *)anchor
+                    styleJson:(nullable NSString *)styleJson;
 @property(nonatomic, copy, nullable) NSString *title;
 @property(nonatomic, copy, nullable) NSString *snippet;
 @property(nonatomic, strong) FGMPlatformPoint *anchor;
+@property(nonatomic, copy, nullable) NSString *styleJson;
 @end
 
 /// Pigeon equivalent of Cluster.

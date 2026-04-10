@@ -109,6 +109,15 @@ class MarkerController implements MarkerOptionsSink {
   }
 
   @Override
+  public void setInfoWindowStyleJson(String styleJson) {
+    Marker marker = weakMarker.get();
+    if (marker == null) {
+      return;
+    }
+    marker.setTag(styleJson);
+  }
+
+  @Override
   public void setPosition(LatLng position) {
     Marker marker = weakMarker.get();
     if (marker == null) {

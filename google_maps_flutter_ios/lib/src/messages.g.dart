@@ -724,7 +724,12 @@ class PlatformWeightedLatLng {
 
 /// Pigeon equivalent of the InfoWindow class.
 class PlatformInfoWindow {
-  PlatformInfoWindow({this.title, this.snippet, required this.anchor});
+  PlatformInfoWindow({
+    this.title,
+    this.snippet,
+    required this.anchor,
+    this.styleJson,
+  });
 
   String? title;
 
@@ -732,8 +737,10 @@ class PlatformInfoWindow {
 
   PlatformPoint anchor;
 
+  String? styleJson;
+
   List<Object?> _toList() {
-    return <Object?>[title, snippet, anchor];
+    return <Object?>[title, snippet, anchor, styleJson];
   }
 
   Object encode() {
@@ -746,6 +753,7 @@ class PlatformInfoWindow {
       title: result[0] as String?,
       snippet: result[1] as String?,
       anchor: result[2]! as PlatformPoint,
+      styleJson: result[3] as String?,
     );
   }
 

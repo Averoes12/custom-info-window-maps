@@ -90,6 +90,7 @@
   marker.zIndex = (int)platformMarker.zIndex;
   FGMPlatformInfoWindow *infoWindow = platformMarker.infoWindow;
   marker.infoWindowAnchor = FGMGetCGPointForPigeonPoint(infoWindow.anchor);
+  FGMSetInfoWindowStyleJsonToMarkerUserData(infoWindow.styleJson, marker);
   if (infoWindow.title) {
     marker.title = infoWindow.title;
     marker.snippet = infoWindow.snippet;

@@ -19,6 +19,7 @@ class MarkerBuilder implements MarkerOptionsSink, ClusterItem {
   private String clusterManagerId;
   private String markerId;
   private boolean consumeTapEvents;
+  @Nullable private String infoWindowStyleJson;
 
   MarkerBuilder(String markerId, String clusterManagerId, @NonNull PlatformMarkerType markerType) {
     switch (markerType) {
@@ -108,6 +109,16 @@ class MarkerBuilder implements MarkerOptionsSink, ClusterItem {
   public void setInfoWindowText(String title, String snippet) {
     markerOptions.title(title);
     markerOptions.snippet(snippet);
+  }
+
+  @Override
+  public void setInfoWindowStyleJson(String styleJson) {
+    infoWindowStyleJson = styleJson;
+  }
+
+  @Nullable
+  String infoWindowStyleJson() {
+    return infoWindowStyleJson;
   }
 
   @Override

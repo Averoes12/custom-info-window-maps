@@ -26,6 +26,8 @@ interface MarkerOptionsSink {
 
   void setInfoWindowText(String title, String snippet);
 
+  void setInfoWindowStyleJson(String styleJson);
+
   void setPosition(LatLng position);
 
   void setRotation(float rotation);
