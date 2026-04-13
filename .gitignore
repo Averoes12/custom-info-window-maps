@@ -3,6 +3,8 @@
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
+.gradle/
+**/.gradle/
 build/
 **/.symlinks/
 **/Pods/
