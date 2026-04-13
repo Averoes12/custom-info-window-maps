@@ -28,6 +28,17 @@ class CustomMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
   @Override
   @Nullable
   public android.view.View getInfoWindow(@NonNull Marker marker) {
+    return buildInfoView(marker);
+  }
+
+  @Override
+  @Nullable
+  public android.view.View getInfoContents(@NonNull Marker marker) {
+    return buildInfoView(marker);
+  }
+
+  @Nullable
+  private android.view.View buildInfoView(@NonNull Marker marker) {
     final String title = marker.getTitle();
     final String snippet = marker.getSnippet();
     if (TextUtils.isEmpty(title) && TextUtils.isEmpty(snippet)) {
@@ -95,12 +106,6 @@ class CustomMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     return container;
-  }
-
-  @Override
-  @Nullable
-  public android.view.View getInfoContents(@NonNull Marker marker) {
-    return null;
   }
 
   private int dp(double value) {

@@ -115,6 +115,10 @@ class MarkerController implements MarkerOptionsSink {
       return;
     }
     marker.setTag(styleJson);
+    if (marker.isInfoWindowShown()) {
+      marker.hideInfoWindow();
+      marker.showInfoWindow();
+    }
   }
 
   @Override
