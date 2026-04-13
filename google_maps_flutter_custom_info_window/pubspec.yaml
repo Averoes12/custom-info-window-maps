@@ -12,24 +12,6 @@ dependencies:
   flutter:
     sdk: flutter
   google_maps_flutter:
-    git:
-      url: git@github.com:Averoes12/custom-info-window-maps.git
-      ref: v0.2.3
-      path: google_maps_flutter
-  google_maps_flutter_android:
-    git:
-      url: git@github.com:Averoes12/custom-info-window-maps.git
-      ref: v0.2.3
-      path: google_maps_flutter_android
-  google_maps_flutter_ios:
-    git:
-      url: git@github.com:Averoes12/custom-info-window-maps.git
-      ref: v0.2.3
-      path: google_maps_flutter_ios
-  google_maps_flutter_platform_interface:
-    git:
-      url: git@github.com:Averoes12/custom-info-window-maps.git
-      ref: v0.2.3
-      path: google_maps_flutter_platform_interface
+    path: ../google_maps_flutter
 
 flutter:
