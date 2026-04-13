@@ -4,6 +4,7 @@ Monorepo internal untuk override implementation package `google_maps_flutter` ag
 
 Isi repo:
 
+- `google_maps_flutter_custom_info_window`
 - `google_maps_flutter`
 - `google_maps_flutter_android`
 - `google_maps_flutter_ios`
@@ -18,6 +19,18 @@ Repo ini menyimpan fork implementation package yang menambahkan custom native in
 ## Integrasi di aplikasi
 
 Tambahkan override berikut di `pubspec.yaml` aplikasi:
+
+### Opsi sederhana: satu dependency
+
+```yaml
+google_maps_flutter_custom_info_window:
+  git:
+    url: git@github.com:Averoes12/custom-info-window-maps.git
+    ref: v0.3.0
+    path: google_maps_flutter_custom_info_window
+```
+
+### Opsi manual: override semua package maps
 
 ```yaml
 dependency_overrides:
